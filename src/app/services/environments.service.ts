@@ -407,7 +407,6 @@ export class EnvironmentsService {
     const environment = this.store.getEnvironmentByUUID(environmentUUID);
 
     try {
-      // reset environment before exporting
       clipboard.writeText(this.dataService.wrapExport(cloneDeep(environment), 'environment'));
       this.toastService.addToast('success', Messages.EXPORT_ENVIRONMENT_CLIPBOARD_SUCCESS);
       this.eventsService.analyticsEvents.next(AnalyticsEvents.EXPORT_CLIPBOARD);
@@ -541,5 +540,21 @@ export class EnvironmentsService {
    */
   public setEnvironmentCORSHeaders() {
     this.eventsService.injectHeaders.emit({ target: 'environmentHeaders', headers: CORSHeaders });
+  }
+
+  /**
+   * Import an OpenAPI (v2/v3) file in Mockoon's format.
+   *
+   * Append imported envs to the env array.
+   */
+  public importOpenAPIFile() {
+
+  }
+
+  /**
+   * Export all environments to an OpenAPI v3 file
+   */
+  public exportOpenAPIFile() {
+
   }
 }
