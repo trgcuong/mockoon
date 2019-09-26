@@ -22,6 +22,8 @@ import { Environment } from 'src/app/types/environment.type';
 import { CORSHeaders, Header, mimeTypesWithTemplating, Route } from 'src/app/types/route.type';
 import { URL } from 'url';
 
+const axios = require('axios');
+
 const httpsConfig = {
   key: pemFiles.key,
   cert: pemFiles.cert
@@ -165,6 +167,7 @@ export class ServerService {
               this.setHeaders(enabledRouteResponse.headers, req, res);
 
               // send the file
+
               if (enabledRouteResponse.filePath) {
                 let filePath: string;
 
@@ -190,6 +193,8 @@ export class ServerService {
                   }
                   res.send(fileContent);
                 } catch (error) {
+
+
                   if (error.code === 'ENOENT') {
                     this.sendError(res, Errors.FILE_NOT_EXISTS + filePath, false);
                   } else if (error.message.indexOf('Parse error') > -1) {
@@ -198,6 +203,7 @@ export class ServerService {
                   res.end();
                 }
               } else {
+
                 // detect if content type is json in order to parse
                 if (routeContentType === 'application/json') {
                   try {
@@ -212,13 +218,38 @@ export class ServerService {
                     res.end();
                   }
                 } else {
+
                   try {
-                    res.send(DummyJSONParser(enabledRouteResponse.body, req));
+                    console.log(req.headers);
+                    if (enabledRouteResponse.body === "{}" &&(req.headers.base_url.toString().startsWith('https://') 
+                    || req.headers.base_url.toString().startsWith('http://'))) {
+                      //console.log(req.method.toLowerCase()+":"+req.headers.base_url+ req.url);
+                      axios({
+                        method: req.method.toLowerCase(),
+                        url: req.headers.base_url + req.url, // base_url/route
+                        headers: req.headers,
+                        param: req.body
+                      })
+
+                        .then(function (response) {
+                          res.send(response.data)
+                        })
+                        .catch(function (error) {
+
+                          console.log(error);
+                          res.send(error)
+                        })
+
+                    } else {
+                      res.send(DummyJSONParser(enabledRouteResponse.body, req));
+                    }
+
                   } catch (error) {
                     // if invalid Content-Type provided
                     if (error.message.indexOf('invalid media type') > -1) {
                       this.sendError(res, Errors.INVALID_CONTENT_TYPE);
                     }
+
                     res.end();
                   }
                 }
@@ -226,6 +257,7 @@ export class ServerService {
             }, enabledRouteResponse.latency);
           });
         } catch (error) {
+
           // if invalid regex defined
           if (error.message.indexOf('Invalid regular expression') > -1) {
             this.toastService.addToast('error', Errors.INVALID_ROUTE_REGEX + declaredRoute.endpoint);
@@ -264,6 +296,7 @@ export class ServerService {
     }
     res.set('Content-Type', 'text/plain');
     res.send(errorMessage);
+    this.toastService.addToast("error", "ihihihih");
   }
 
   /**
@@ -274,6 +307,7 @@ export class ServerService {
    * @param environment - environment to get proxy settings from
    */
   private enableProxy(server: Application, environment: Environment) {
+
     // Add catch all proxy if enabled
     if (environment.proxyMode && environment.proxyHost && this.isValidURL(environment.proxyHost)) {
       // res-stream the body (intercepted by body parser method) and mark as proxied
@@ -304,6 +338,7 @@ export class ServerService {
    * @param environment - environment to link log to
    */
   private logRequests(server: Application, environment: Environment) {
+
     server.use((req, res, next) => {
       this.store.update({ type: 'LOG_REQUEST', UUID: environment.uuid, item: this.dataService.formatRequestLog(req) });
 
