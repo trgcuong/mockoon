@@ -220,10 +220,9 @@ export class ServerService {
                 } else {
 
                   try {
-                    console.log(req.headers);
-                    if (enabledRouteResponse.body === "{}" &&(req.headers.base_url.toString().startsWith('https://') 
-                    || req.headers.base_url.toString().startsWith('http://'))) {
-                      //console.log(req.method.toLowerCase()+":"+req.headers.base_url+ req.url);
+                  
+                    if (enabledRouteResponse.body === "{}" && req.headers.base_url) {
+                      console.log(req.method.toLowerCase()+":"+req.headers.base_url+ req.url);
                       axios({
                         method: req.method.toLowerCase(),
                         url: req.headers.base_url + req.url, // base_url/route
