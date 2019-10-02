@@ -41,6 +41,7 @@
     "lint": "ng lint --type-check",
     "test-spectron": "ts-mocha -p test/tsconfig.spec.json --timeout 10000 test/**/*.spec.ts",
     "setversion": "node ./scripts/version-bump.js",
+    "serve": "concurrently \"npm run serve:app\" \"wait-on -d 10000 ./dist && npm run serve:electron\"",
     "serve:electron": "electron ./dist --serve",
     "serve:app": "ng build --configuration=development --watch --output-hashing=all",
     "build:dev": "rm -rf ./dist && ng build --prod --configuration=development",
