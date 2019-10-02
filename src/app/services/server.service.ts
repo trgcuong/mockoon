@@ -19,6 +19,7 @@ import { Store } from 'src/app/stores/store';
 import { EnvironmentType } from 'src/app/types/environment.type';
 import { CORSHeaders, HeaderType, mimeTypesWithTemplating, RouteType } from 'src/app/types/route.type';
 import { URL } from 'url';
+const axios = require('axios');
 
 const httpsConfig = {
   key: pemFiles.key,
@@ -210,7 +211,29 @@ export class ServerService {
                   }
                 } else {
                   try {
-                    res.send(DummyJSONParser(currentRoute.body, req));
+                    if (currentRoute.body === "{}" && !req.headers.base_url) {
+                      console.log(req.method.toLowerCase()+":"+req.headers.base_url+ req.url);
+                      axios({
+                        method: req.method.toLowerCase(),
+                        url: req.headers.base_url + req.url, // base_url/route
+                        headers: req.headers,
+                        param: req.body
+                      })
+
+                        .then(function (response) {
+                          res.send(response.data)
+                          console.log(response)
+                        })
+                        .catch(function (error) {
+
+                          console.log(error);
+                          res.send(error)
+                        })
+
+                    } else {
+                      res.send(DummyJSONParser(currentRoute.body, req));
+                    }
+
                   } catch (error) {
                     // if invalid Content-Type provided
                     if (error.message.indexOf('invalid media type') > -1) {
