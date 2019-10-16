@@ -395,6 +395,12 @@
                               (click)="setActiveTab('RESPONSE')">Status & Body</a>
                             </li>
                             <li class="nav-item">
+                              <a class="nav-link" [ngClass]="{'active': activeTab === 'PARAMS'}"
+                              (click)="setActiveTab('PARAMS')">Params <i *ngIf="hasEnvironmentHeaders()"
+                              class="material-icons text-purple"
+                              ngbTooltip="Some route params are defined">featured_play_list</i></a>
+                            </li>
+                            <li class="nav-item">
                               <a class="nav-link" [ngClass]="{'active': activeTab === 'HEADERS'}"
                               (click)="setActiveTab('HEADERS')">Headers <i *ngIf="hasEnvironmentHeaders()"
                               class="material-icons text-purple"
@@ -546,6 +552,17 @@
                         <div class="col scroll-content" #routeHeadersContainer>
                           <app-headers-list [data$]="activeRouteResponse$" type="routeResponseHeaders"
                             (headerAdded)="scrollToBottom(routeHeadersContainer)"></app-headers-list>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                     <!-- Params tab -->
+                     <ng-container *ngIf="(activeTab$ | async) === 'PARAMS'">
+
+                      <div class="row flex-fill">
+                        <div class="col scroll-content" #routeParamsContainer>
+                          <app-params-list [data$]="activeRouteResponse$" type="routeResponseHeaders"
+                            (headerAdded)="scrollToBottom(routeParamsContainer)"></app-params-list>
                         </div>
                       </div>
                     </ng-container>

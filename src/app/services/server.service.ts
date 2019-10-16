@@ -319,6 +319,7 @@ export class ServerService {
   private addRouteWith(req: any, response: string) {
     var endpoint = req.url.toString()
     endpoint = endpoint.substr(1,endpoint.length-1)// remove / first
+    let headers = req.header
     const newRoute: Route = {
       method : req.method.toLowerCase(),
       endpoint: endpoint,
