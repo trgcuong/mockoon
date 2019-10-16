@@ -223,9 +223,15 @@ export class ServerService {
                   
                     if (enabledRouteResponse.body === "{}" && req.headers.base_url) {
                       console.log(req.headers.base_url+ req.url);
+                      let baseUrl = req.headers.base_url
+                      currentEnvironment.headers.forEach(header => {
+                        if(header.key === "base_url" && header.value){
+                          baseUrl = header.value
+                        }
+                      })
                       axios({
                         method: req.method.toLowerCase(),
-                        url: req.headers.base_url + req.url, // base_url/route
+                        url: baseUrl + req.url, // base_url/route
                         headers: req.headers,
                         param: req.body
                       })
