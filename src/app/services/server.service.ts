@@ -324,6 +324,7 @@ export class ServerService {
       method : req.method.toLowerCase(),
       endpoint: endpoint,
       documentation: '',
+      params: [{key:'',value:''}],
       uuid: uuid(),
       responses: [
         {

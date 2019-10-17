@@ -257,7 +257,7 @@ export type Route = {
   documentation: string;
   method: 'get' | 'post' | 'put' | 'patch' | 'delete' | 'head';
   endpoint: string;
-  params?: ParamRequest[];
+  params: ParamRequest[];
   responses: RouteResponse[];
 };
 

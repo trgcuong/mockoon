@@ -47,6 +47,7 @@ export class EnvironmentsService {
     documentation: '',
     method: 'get',
     endpoint: '',
+    params:[{key: '', value: ''}],
     responses: []
   };
 
@@ -205,6 +206,7 @@ export class EnvironmentsService {
       uuid: uuid()+ method,
       documentation: '',
       endpoint: '*',
+      params:[{key: '', value: ''}],
       method: method,
       responses: [
         {

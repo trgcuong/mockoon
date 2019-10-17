@@ -561,7 +561,7 @@
 
                       <div class="row flex-fill">
                         <div class="col scroll-content" #routeParamsContainer>
-                          <app-params-list [data$]="activeRouteResponse$" type="routeResponseHeaders"
+                          <app-params-list [data$]="activeRoute$"
                             (headerAdded)="scrollToBottom(routeParamsContainer)"></app-params-list>
                         </div>
                       </div>

@@ -5,8 +5,7 @@ import { debounceTime, distinctUntilChanged, distinctUntilKeyChanged, filter, ma
 import { EnvironmentsService } from 'src/app/services/environments.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ServerService } from 'src/app/services/server.service';
-import { Environment } from 'src/app/types/environment.type';
-import { Header, headerNames, headerValues, RouteResponse, ParamRequest } from 'src/app/types/route.type';
+import { Route, headerNames, headerValues, RouteResponse, ParamRequest } from 'src/app/types/route.type';
 
 export type HeadersListType = 'routeResponseHeaders' | 'environmentHeaders';
 
@@ -15,8 +14,7 @@ export type HeadersListType = 'routeResponseHeaders' | 'environmentHeaders';
   templateUrl: 'params-list.component.html'
 })
 export class ParamsListComponent implements OnInit {
-  @Input() data$: Observable<Environment | RouteResponse>;
-  @Input() type: HeadersListType;
+  @Input() data$: Observable<Route>;
   @Output() headerAdded: EventEmitter<any> = new EventEmitter();
   public form: FormGroup;
   public headersFormChanges: Subscription;
@@ -31,7 +29,7 @@ export class ParamsListComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      headers: this.formBuilder.array([])
+      params: this.formBuilder.array([])
     });
 
     // subscribe to header injection events
@@ -40,7 +38,6 @@ export class ParamsListComponent implements OnInit {
     ).subscribe(params => this.injectParams(params));
 
     // subscribe to headers changes to reset the form
-    console.log(this.data$);
     this.data$.pipe(
       filter(data => !!data),
       distinctUntilKeyChanged('uuid')
@@ -51,10 +48,10 @@ export class ParamsListComponent implements OnInit {
         this.headersFormChanges.unsubscribe();
       }
 
-      this.replaceHeaders(data.headers);
+      this.replaceHeaders(data.params);
 
       // subscribe to changes and send new headers values to the store
-      this.headersFormChanges = this.form.get('headers').valueChanges.pipe(
+      this.headersFormChanges = this.form.get('params').valueChanges.pipe(
       //  map(newValue => ({ headers: newValue }))
       ).subscribe(newProperty => {
         console.log('addParam',newProperty)
@@ -66,10 +63,11 @@ export class ParamsListComponent implements OnInit {
   /**
    * Replace existing header with injected header value, or append injected header
    */
-  private injectParams(param: ParamRequest[]) {
-    const newParams = [...this.form.value.headers];
+  private injectParams(params: ParamRequest[]) {
+    console.log('injectParams',params)
+    const newParams = [...this.form.value];
 
-    param.forEach(param => {
+    params.forEach(param => {
       const paramsExistsIndex = newParams.findIndex(newParam => newParam.key === param.key);
 
       if (paramsExistsIndex > -1 && !newParams[paramsExistsIndex].value) {
@@ -85,18 +83,18 @@ export class ParamsListComponent implements OnInit {
   /**
    * Replace all headers in the FormArray
    */
-  private replaceHeaders(newHeaders: Header[]) {
-    const formHeadersArray = (this.form.get('headers') as FormArray);
+  private replaceHeaders(params: ParamRequest[]) {
+    const formHeadersArray = (this.form.get('params') as FormArray);
 
     // clear formArray (with Angular 8 use .clear())
     while (formHeadersArray.length !== 0) {
       formHeadersArray.removeAt(0);
     }
 
-    newHeaders.forEach(header => {
+    params.forEach(param => {
       formHeadersArray.push(this.formBuilder.group({
-        key: header.key,
-        value: header.value
+        key: param.key,
+        value: param.value
       }));
     });
   }
@@ -125,7 +123,7 @@ export class ParamsListComponent implements OnInit {
    * Add a new header to the list if possible
    */
   public addParam() {
-    (this.form.get('headers') as FormArray).push(this.formBuilder.group({ key: '', value: '' }));
+    (this.form.get('params') as FormArray).push(this.formBuilder.group({ key: '', value: '' }));
 
     this.headerAdded.emit();
   }
@@ -135,7 +133,7 @@ export class ParamsListComponent implements OnInit {
    *
    * @param headerUUID
    */
-  public removeHeader(headerIndex: number) {
-    (this.form.get('headers') as FormArray).removeAt(headerIndex);
+  public removeParam(paramIndex: number) {
+    (this.form.get('params') as FormArray).removeAt(paramIndex);
   }
 }
