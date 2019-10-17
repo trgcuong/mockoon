@@ -14,12 +14,12 @@ import { EventsService } from 'src/app/services/events.service';
 import { ServerService } from 'src/app/services/server.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { ToastsService } from 'src/app/services/toasts.service';
-import { addEnvironmentAction, addRouteAction, addRouteResponseAction, moveEnvironmentsAction, moveRouteResponsesAction, moveRoutesAction, navigateEnvironmentsAction, navigateRoutesAction, removeEnvironmentAction, removeRouteAction, removeRouteResponseAction, setActiveEnvironmentAction, setActiveEnvironmentLogTabAction, setActiveRouteAction, setActiveRouteResponseAction, setActiveTabAction, setActiveViewAction, setInitialEnvironmentsAction, updateEnvironmentAction, updateRouteAction, updateRouteResponseAction } from 'src/app/stores/actions';
+import { addEnvironmentAction, addRouteAction, addRouteResponseAction, moveEnvironmentsAction, moveRouteResponsesAction, moveRoutesAction, navigateEnvironmentsAction, navigateRoutesAction, removeEnvironmentAction, removeRouteAction, removeRouteResponseAction, setActiveEnvironmentAction, setActiveEnvironmentLogTabAction, setActiveRouteAction, setActiveRouteResponseAction, setActiveTabAction, setActiveViewAction, setInitialEnvironmentsAction, updateEnvironmentAction, updateRouteAction, updateRouteResponseAction, updateRouteParamRequestAction } from 'src/app/stores/actions';
 import { ReducerDirectionType } from 'src/app/stores/reducer';
 import { EnvironmentLogsTabsNameType, Store, TabsNameType, ViewsNameType } from 'src/app/stores/store';
 import { DataSubjectType, ExportType } from 'src/app/types/data.type';
 import { Environment, EnvironmentProperties, Environments } from 'src/app/types/environment.type';
-import { CORSHeaders, Header, Route, RouteProperties, RouteResponse, RouteResponseProperties } from 'src/app/types/route.type';
+import { CORSHeaders, Header, Route, RouteProperties, RouteResponse, RouteResponseProperties, ParamRequest } from 'src/app/types/route.type';
 import { dragulaNamespaces } from 'src/app/types/ui.type';
 import * as uuid from 'uuid/v1';
 const appVersion = require('../../../package.json').version;
@@ -316,6 +316,10 @@ export class EnvironmentsService {
    */
   public updateActiveRouteResponse(properties: RouteResponseProperties) {
     this.store.update(updateRouteResponseAction(properties));
+  }
+
+  public updateParamRequestRoute(params : ParamRequest[]){
+    this.store.update(updateRouteParamRequestAction(params))
   }
 
   /**

@@ -6,7 +6,7 @@ import { EnvironmentsService } from 'src/app/services/environments.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ServerService } from 'src/app/services/server.service';
 import { Environment } from 'src/app/types/environment.type';
-import { Header, headerNames, headerValues, RouteResponse } from 'src/app/types/route.type';
+import { Header, headerNames, headerValues, RouteResponse, ParamRequest } from 'src/app/types/route.type';
 
 export type HeadersListType = 'routeResponseHeaders' | 'environmentHeaders';
 
@@ -35,16 +35,17 @@ export class ParamsListComponent implements OnInit {
     });
 
     // subscribe to header injection events
-    this.eventsService.injectHeaders.pipe(
-      filter(data => data.target === this.type),
-      map(data => data.headers)
-    ).subscribe(headers => this.injectHeaders(headers));
+    this.eventsService.injectParams.pipe(
+      
+    ).subscribe(params => this.injectParams(params));
 
     // subscribe to headers changes to reset the form
+    console.log(this.data$);
     this.data$.pipe(
       filter(data => !!data),
       distinctUntilKeyChanged('uuid')
     ).subscribe(data => {
+      console.log('paramsTab',data)
       // unsubscribe to prevent emitting when clearing the FormArray
       if (this.headersFormChanges) {
         this.headersFormChanges.unsubscribe();
@@ -54,13 +55,10 @@ export class ParamsListComponent implements OnInit {
 
       // subscribe to changes and send new headers values to the store
       this.headersFormChanges = this.form.get('headers').valueChanges.pipe(
-        map(newValue => ({ headers: newValue }))
+      //  map(newValue => ({ headers: newValue }))
       ).subscribe(newProperty => {
-        if (this.type === 'environmentHeaders') {
-          this.environmentsService.updateActiveEnvironment(newProperty);
-        } else if (this.type === 'routeResponseHeaders') {
-          this.environmentsService.updateActiveRouteResponse(newProperty);
-        }
+        console.log('addParam',newProperty)
+        this.environmentsService.updateParamRequestRoute(newProperty)
       });
     });
   }
@@ -68,20 +66,20 @@ export class ParamsListComponent implements OnInit {
   /**
    * Replace existing header with injected header value, or append injected header
    */
-  private injectHeaders(headers: Header[]) {
-    const newHeaders = [...this.form.value.headers];
+  private injectParams(param: ParamRequest[]) {
+    const newParams = [...this.form.value.headers];
 
-    headers.forEach(header => {
-      const headerExistsIndex = newHeaders.findIndex(newHeader => newHeader.key === header.key);
+    param.forEach(param => {
+      const paramsExistsIndex = newParams.findIndex(newParam => newParam.key === param.key);
 
-      if (headerExistsIndex > -1 && !newHeaders[headerExistsIndex].value) {
-        newHeaders[headerExistsIndex] = { ...header };
-      } else if (headerExistsIndex === -1) {
-        newHeaders.push({ ...header });
+      if (paramsExistsIndex > -1 && !newParams[paramsExistsIndex].value) {
+        newParams[paramsExistsIndex] = { ...param };
+      } else if (paramsExistsIndex === -1) {
+        newParams.push({ ...param });
       }
     });
 
-    this.replaceHeaders(newHeaders);
+    this.replaceHeaders(newParams);
   }
 
   /**
@@ -126,7 +124,7 @@ export class ParamsListComponent implements OnInit {
   /**
    * Add a new header to the list if possible
    */
-  public addHeader() {
+  public addParam() {
     (this.form.get('headers') as FormArray).push(this.formBuilder.group({ key: '', value: '' }));
 
     this.headerAdded.emit();

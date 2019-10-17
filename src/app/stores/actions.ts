@@ -3,7 +3,7 @@ import { Toast } from 'src/app/services/toasts.service';
 import { ReducerDirectionType, ReducerIndexes } from 'src/app/stores/reducer';
 import { EnvironmentLogsTabsNameType, EnvironmentStatusProperties, TabsNameType, ViewsNameType } from 'src/app/stores/store';
 import { Environment, EnvironmentProperties, Environments } from 'src/app/types/environment.type';
-import { Route, RouteProperties, RouteResponse, RouteResponseProperties } from 'src/app/types/route.type';
+import { Route, RouteProperties, RouteResponse, RouteResponseProperties, ParamRequest } from 'src/app/types/route.type';
 import { EnvironmentLog, EnvironmentLogResponse } from 'src/app/types/server.type';
 
 export const enum ActionTypes {
@@ -35,7 +35,8 @@ export const enum ActionTypes {
   ADD_TOAST,
   REMOVE_TOAST,
   SET_USER_ID,
-  UPDATE_SETTINGS
+  UPDATE_SETTINGS,
+  UPDATE_ROUTE_PARAMS_REQUEST
 }
 
 /**
@@ -299,6 +300,13 @@ export function updateRouteResponseAction(properties: RouteResponseProperties) {
   };
 }
 
+export function updateRouteParamRequestAction(params: ParamRequest[]){
+  return <const>{
+    type: ActionTypes.UPDATE_ROUTE_PARAMS_REQUEST,
+    params
+  }
+}
+
 /**
  * Log an entering request
  *
@@ -419,4 +427,5 @@ export type Actions =
   ReturnType<typeof addToastAction> |
   ReturnType<typeof removeToastAction> |
   ReturnType<typeof setUserIdAction> |
+  ReturnType<typeof updateRouteParamRequestAction> |
   ReturnType<typeof updateSettingsAction>;

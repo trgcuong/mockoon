@@ -257,10 +257,13 @@ export type Route = {
   documentation: string;
   method: 'get' | 'post' | 'put' | 'patch' | 'delete' | 'head';
   endpoint: string;
+  params?: ParamRequest[];
   responses: RouteResponse[];
 };
 
 export type Header = { key: string, value: string };
+
+export type ParamRequest = {key: string, value: string};
 
 export const CORSHeaders: Header[] = [
   { key: 'Access-Control-Allow-Origin', value: '*' },

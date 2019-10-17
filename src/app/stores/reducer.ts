@@ -662,6 +662,16 @@ export function environmentReducer(
       break;
     }
 
+    case ActionTypes.UPDATE_ROUTE_PARAMS_REQUEST:{
+      let activeEnvironment = state.environments
+      .filter(environment => environment.uuid === state.activeEnvironmentUUID)[0]
+      let activeRoute = activeEnvironment.routes.filter(route => route.uuid === state.activeRouteUUID)[0]
+      activeRoute.params = action.params
+      newState = {
+        ...state
+      }
+    }
+
     default:
       newState = state;
       break;
