@@ -222,28 +222,37 @@ export class ServerService {
                   try {
                   
                     if (enabledRouteResponse.body === "{}" && req.headers.base_url) {
-                      console.log(req.headers.base_url+ req.url);
+                      console.log('requestRealAPI',req);
                       let baseUrl = req.headers.base_url
                       currentEnvironment.headers.forEach(header => {
                         if(header.key === "base_url" && header.value){
                           baseUrl = header.value
                         }
                       })
+                      let paramObj = {}
+                      let paramRoute = []
+                      decodeURIComponent(req.body).toString().split('&').forEach(param => {
+                        let paramArr = param.split('=')
+                        paramObj[paramArr[0]] = paramArr[1]
+                        paramRoute.push({key: paramArr[0], value: paramArr[1]})
+                      })
+                      console.log('paramReques',decodeURIComponent(req.body))
+                    
                       axios({
                         method: req.method.toLowerCase(),
                         url: baseUrl + req.url, // base_url/route
                         headers: req.headers,
-                        param: req.body
+                        params: paramObj
                       })
 
                         .then(function (response) {
                           var resposneStr = JSON.stringify(response.data,null,2)
-                          console.log('resposneStr',resposneStr)
+                          //console.log('resposneStr',resposneStr)
                           if(resposneStr === 'undefined'){
                             resposneStr = response.data.toString()
                           }
                     
-                          self.addRouteWith(req, resposneStr);
+                          self.addRouteWith(req, resposneStr, paramRoute);
                           res.send(resposneStr);
                           
                         })
@@ -316,15 +325,20 @@ export class ServerService {
    * @param req 
    * @param response 
    */
-  private addRouteWith(req: any, response: string) {
+  private addRouteWith(req: any, response: string, params:[]) {
     var endpoint = req.url.toString()
     endpoint = endpoint.substr(1,endpoint.length-1)// remove / first
-    let headers = req.header
+    let headers = req.headers
+    let headerArr = []
+    Object.keys(headers).forEach(headerKey => {
+      headerArr.push({key: headerKey, value: headers[headerKey]})
+    })
+    //console.log('headerRequest',headers)
     const newRoute: Route = {
       method : req.method.toLowerCase(),
       endpoint: endpoint,
       documentation: '',
-      params: [{key:'',value:''}],
+      params: params,
       uuid: uuid(),
       responses: [
         {
@@ -333,9 +347,7 @@ export class ServerService {
             body: response,
             latency: 0,
             statusCode: '200',
-            headers: [
-              { key: '', value: '' }
-            ],
+            headers: headerArr,
             filePath: '',
             sendFileAsBody: false,
             rules: []
