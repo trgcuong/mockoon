@@ -423,6 +423,8 @@ export function environmentReducer(
     case ActionTypes.ADD_ROUTE: {
       // only add a route if there is at least one environment
       var isDuplicate = false
+      var needRestart = false
+      const activeEnvironmentStatus = state.environmentsStatus[state.activeEnvironmentUUID];
       if (state.environments.length > 0) {
         const newRoute = action.route;
         var enviroment = state.environments.map(environment => {
@@ -450,13 +452,19 @@ export function environmentReducer(
 
         var activeRoute = state.activeRouteUUID
         if(!isDuplicate) activeRoute =  newRoute.uuid 
+        if(newRoute.endpoint) needRestart = true
+      
         newState = {
           ...state,
           activeRouteUUID: activeRoute,
           activeRouteResponseUUID: newRoute.responses[0].uuid,
           activeTab: 'RESPONSE',
           activeView: 'ROUTE',
-          environments: enviroment
+          environments: enviroment,
+          environmentsStatus: {
+            ...state.environmentsStatus,
+            [state.activeEnvironmentUUID]: { ...activeEnvironmentStatus, needRestart }
+          }
         };
         break;
       }

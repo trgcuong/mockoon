@@ -230,7 +230,7 @@ export class ServerService {
                         }
                       })
                       let paramObj = {}
-                      let paramRoute = []
+                      let paramRoute :Header[] = []
                       decodeURIComponent(req.body).toString().split('&').forEach(param => {
                         let paramArr = param.split('=')
                         paramObj[paramArr[0]] = paramArr[1]
@@ -325,7 +325,7 @@ export class ServerService {
    * @param req 
    * @param response 
    */
-  private addRouteWith(req: any, response: string, params:[]) {
+  private addRouteWith(req: any, response: string, params:Header[]) {
     var endpoint = req.url.toString()
     endpoint = endpoint.substr(1,endpoint.length-1)// remove / first
     let headers = req.headers
