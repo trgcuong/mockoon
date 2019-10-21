@@ -452,7 +452,7 @@ export function environmentReducer(
 
         var activeRoute = state.activeRouteUUID
         if(!isDuplicate) activeRoute =  newRoute.uuid 
-        if(newRoute.endpoint) needRestart = true
+        if(newRoute.endpoint && !isDuplicate) needRestart = true
       
         newState = {
           ...state,
