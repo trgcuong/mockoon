@@ -200,6 +200,62 @@ export class EnvironmentsService {
     this.eventsService.analyticsEvents.next(AnalyticsEvents.CREATE_ROUTE);
   }
 
+  public sendRequest(){
+    let self = this
+    const axios = require('axios');
+    let activeRoute = this.store.getActiveRoute()
+    let activeEnvironment = this.store.getActiveEnvironment()
+    var base_url : string
+    activeRoute.responses[0].headers.forEach(header => {
+      if(header.key === 'base_url' && header.value){
+        base_url = header.value
+      }
+    })
+    activeEnvironment.headers.forEach(header => {
+      if(header.key === "base_url" && header.value){
+        base_url = header.value
+      }
+    })
+
+    if(base_url === 'undefined'){
+      this.toastService.addToast('error', 'Please set base_url on header');
+      return
+    }
+
+    let headers = {}
+    let params = {}
+    activeRoute.responses[0].headers.forEach(header => {
+      headers[header.key] = header.value
+    })
+    activeRoute.params.forEach(param => {
+      params[param.key] = param.value
+    })
+    axios({
+      method: activeRoute.method,
+      url: base_url +'/' + activeRoute.endpoint, // base_url/route
+      headers:headers ,
+      params: params
+    })
+      .then(function (response) {
+        var resposneStr = JSON.stringify(response.data,null,2)
+        //console.log('resposneStr',resposneStr)
+        if(resposneStr === 'undefined'){
+          resposneStr = response.data.toString()
+        }
+        activeRoute.responses[0].body = resposneStr
+
+        console.log('repsone',resposneStr)
+        updateRouteAction(activeRoute)
+       // self.store.update(setActiveRouteAction(activeRoute.uuid, true));
+        //todo update route
+        
+      })
+      .catch(function (error) {
+        console.log(error);
+        this.toastService.addToast('error', error);
+      })
+  }
+
 
   private createDefaultRoute(method:any) {
     const newRoute: Route = {

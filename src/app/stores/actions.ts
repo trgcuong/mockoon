@@ -200,10 +200,11 @@ export function updateEnvironmentStatusAction(properties: EnvironmentStatusPrope
  *
  * @param routeUUID - route UUID to set as active
  */
-export function setActiveRouteAction(routeUUID: string) {
+export function setActiveRouteAction(routeUUID: string, isForce = false) {
   return <const>{
     type: ActionTypes.SET_ACTIVE_ROUTE,
-    routeUUID
+    routeUUID,
+    isForce
   };
 }
 

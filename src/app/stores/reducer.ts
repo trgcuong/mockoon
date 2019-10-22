@@ -194,7 +194,8 @@ export function environmentReducer(
     }
 
     case ActionTypes.SET_ACTIVE_ROUTE: {
-      if (action.routeUUID !== state.activeRouteUUID) {
+      if (action.routeUUID !== state.activeRouteUUID || action.isForce) {
+        console.log('updateActiveRoute',action)
         const activeEnvironment = state.environments.find(environment => environment.uuid === state.activeEnvironmentUUID);
         const activeRoute = activeEnvironment.routes.find(route => route.uuid === action.routeUUID);
 

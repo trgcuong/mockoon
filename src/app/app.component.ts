@@ -396,6 +396,10 @@ export class AppComponent implements OnInit {
     }
   }
 
+  public sendRequest(){
+    this.environmentsService.sendRequest();
+  }
+
   /**
    * Create a new route response in the current route. Append at the end of the list
    */

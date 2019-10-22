@@ -231,7 +231,7 @@ export class ServerService {
                       })
                       let paramObj = {}
                       let paramRoute :Header[] = []
-                      decodeURIComponent(req.body).toString().split('&').forEach(param => {
+                      decodeURIComponent(req.body).split('&').forEach(param => {
                         let paramArr = param.split('=')
                         paramObj[paramArr[0]] = paramArr[1]
                         paramRoute.push({key: paramArr[0], value: paramArr[1]})

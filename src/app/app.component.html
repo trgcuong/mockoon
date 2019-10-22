@@ -336,6 +336,9 @@
                           <input type="text" class="form-control"
                             placeholder="Path supports regexes and params: */:var/a(b)?c/[0-9]{1,5}" ValidPath
                             formControlName="endpoint">
+                            <a class="nav-link text-primary" (click)="sendRequest()">
+                              Send
+                            </a>
                           <div class="input-group-prepend">
                             <span
                               *ngIf="(environmentsStatus$ | async)[activeEnvironment.uuid].running && activeRoute.method === 'get'"
@@ -348,6 +351,7 @@
                                 class="material-icons">warning</i></span>
                           </div>
                         </div>
+                        
                       </div>
                     </div>
 
