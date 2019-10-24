@@ -6,7 +6,6 @@ import { DuplicatedRoutesTypes, EnvironmentsStatuses, StoreType } from 'src/app/
 import { Environment, Environments } from 'src/app/types/environment.type';
 import { Route, RouteResponse } from 'src/app/types/route.type';
 import { EnvironmentLogs } from 'src/app/types/server.type';
-import { ReturnStatement } from '@angular/compiler';
 
 export type ReducerDirectionType = 'next' | 'previous';
 export type ReducerIndexes = { sourceIndex: number, targetIndex: number };
@@ -195,7 +194,6 @@ export function environmentReducer(
 
     case ActionTypes.SET_ACTIVE_ROUTE: {
       if (action.routeUUID !== state.activeRouteUUID || action.isForce) {
-        console.log('updateActiveRoute',action)
         const activeEnvironment = state.environments.find(environment => environment.uuid === state.activeEnvironmentUUID);
         const activeRoute = activeEnvironment.routes.find(route => route.uuid === action.routeUUID);
 
@@ -423,41 +421,44 @@ export function environmentReducer(
 
     case ActionTypes.ADD_ROUTE: {
       // only add a route if there is at least one environment
-      var isDuplicate = false
-      var needRestart = false
+      let isDuplicate = false;
+      let needRestart = false;
       const activeEnvironmentStatus = state.environmentsStatus[state.activeEnvironmentUUID];
       if (state.environments.length > 0) {
         const newRoute = action.route;
-        var enviroment = state.environments.map(environment => {
+        const enviroment = state.environments.map(environment => {
 
           if (environment.uuid === state.activeEnvironmentUUID) {
-            //do not add duplicated endpoints by auto 
-           
+            // do not add duplicated endpoints by auto
+
             environment.routes.forEach( route => {
-              if(newRoute.endpoint && newRoute.endpoint.length > 0 
-                && newRoute.endpoint === route.endpoint 
-                && newRoute.method === route.method){
+              if (newRoute.endpoint && newRoute.endpoint.length > 0
+                && newRoute.endpoint === route.endpoint
+                && newRoute.method === route.method) {
                   isDuplicate = true;
+                  console.log('duplicate', route);
               }
-            })
-          if(!isDuplicate){
+            });
+            if (!isDuplicate) {
               return {
               ...environment,
-              routes: [newRoute,...environment.routes]
+              routes: [newRoute, ...environment.routes]
             };
           }
         }
 
           return environment;
-        })
+        });
 
-        var activeRoute = state.activeRouteUUID
-        if(!isDuplicate) activeRoute =  newRoute.uuid 
-        if(newRoute.endpoint && !isDuplicate) needRestart = true
-      
+        if (isDuplicate) {
+          newState = state;
+          break;
+        }
+        if (newRoute.endpoint && !isDuplicate) { needRestart = true; }
+
         newState = {
           ...state,
-          activeRouteUUID: activeRoute,
+          activeRouteUUID:  state.activeRouteUUID,
           activeRouteResponseUUID: newRoute.responses[0].uuid,
           activeTab: 'RESPONSE',
           activeView: 'ROUTE',
@@ -671,14 +672,14 @@ export function environmentReducer(
       break;
     }
 
-    case ActionTypes.UPDATE_ROUTE_PARAMS_REQUEST:{
-      let activeEnvironment = state.environments
-      .filter(environment => environment.uuid === state.activeEnvironmentUUID)[0]
-      let activeRoute = activeEnvironment.routes.filter(route => route.uuid === state.activeRouteUUID)[0]
-      activeRoute.params = action.params
+    case ActionTypes.UPDATE_ROUTE_PARAMS_REQUEST: {
+      const activeEnvironment = state.environments
+      .filter(environment => environment.uuid === state.activeEnvironmentUUID)[0];
+      const activeRoute = activeEnvironment.routes.filter(route => route.uuid === state.activeRouteUUID)[0];
+      activeRoute.params = action.params;
       newState = {
         ...state
-      }
+      };
     }
 
     default:

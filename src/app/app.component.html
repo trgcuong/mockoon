@@ -336,8 +336,15 @@
                           <input type="text" class="form-control"
                             placeholder="Path supports regexes and params: */:var/a(b)?c/[0-9]{1,5}" ValidPath
                             formControlName="endpoint">
+                            
+                           
+
                             <a class="nav-link text-primary" (click)="sendRequest()">
-                              Send
+                              <div class="overlay-layout">
+                                Send
+    
+                              </div>
+                              <!-- <div class="loader-small"></div> -->
                             </a>
                           <div class="input-group-prepend">
                             <span
